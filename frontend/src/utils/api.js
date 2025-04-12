@@ -7,7 +7,11 @@ const api = axios.create({
 // Function to handle login requests
 export const login = async (email, password) => {
   try {
+    console.log('Logging in with email:', email); // Debugging line
+    console.log('Password',password)
+    console.log('Url:', process.env.REACT_APP_API_URL); // Debugging line
     const response = await api.post('/api/users/login', { email, password }); // Updated route
+    console.log('Login response:', response.data); // Debugging line
     return response.data;  // return token and user data
   } catch (error) {
     throw new Error(error.response?.data?.error || 'Login failed');
@@ -15,12 +19,13 @@ export const login = async (email, password) => {
 };
 
 // Function to handle signup requests
-export const signup = async (email, password) => {
+export const signup = async (firstName, lastName, email, password, role) => {
   try {
-    const response = await api.post('/api/auth/signup', { email, password });
+    const response = await api.post('/api/users/register', { firstName, lastName, email, password, role }); // Updated route
+    console.log('Signup response:', response.data); // Debugging line
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(error.response?.data?.message || 'Signup failed');
   }
 };
 

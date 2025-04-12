@@ -6,6 +6,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -15,8 +16,8 @@ const Login = () => {
       setMessage('Login successful');
       localStorage.setItem('token', response.token); // Save JWT token
       navigate('/dashboard'); // Redirect to dashboard
-    } catch (error) {
-      setMessage(error.message); // Display error message
+    } catch (err) {
+      setMessage(err.response?.data?.error || 'Login failed'); // Display error message
     }
   };
 
