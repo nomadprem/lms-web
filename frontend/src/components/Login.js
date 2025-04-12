@@ -11,12 +11,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login(email, password);
+      const response = await login(email, password); // Call updated login API
       setMessage('Login successful');
       localStorage.setItem('token', response.token); // Save JWT token
-      navigate('/dashboard'); // Redirect to dashboard on successful login
+      navigate('/dashboard'); // Redirect to dashboard
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.message); // Display error message
     }
   };
 

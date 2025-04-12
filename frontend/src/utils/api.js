@@ -7,10 +7,10 @@ const api = axios.create({
 // Function to handle login requests
 export const login = async (email, password) => {
   try {
-    const response = await api.post('/api/auth/login', { email, password });
-    return response.data;  // return token
+    const response = await api.post('/api/users/login', { email, password }); // Updated route
+    return response.data;  // return token and user data
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(error.response?.data?.error || 'Login failed');
   }
 };
 
