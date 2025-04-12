@@ -1,0 +1,12 @@
+# Ignore node_modules in all directories
+**/node_modules/
+
+# Optional: Common ignores for Node.js projects
+.env
+.env.local
+.DS_Store
+dist/
+build/
+*.log
+.idea/
+.vscode/
