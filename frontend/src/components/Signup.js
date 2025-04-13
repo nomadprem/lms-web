@@ -8,6 +8,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [role, setRole] = useState(''); // State to store user role
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +17,7 @@ const Signup = () => {
       return;
     }
     try {
-      await signup({ firstName, lastName, email, password }); // Call API for signup
+      await signup({ firstName, lastName, email, password,role }); // Call API for signup
       setMessage('User registered successfully');
     } catch (error) {
       setMessage(error.message);
@@ -47,6 +48,18 @@ const Signup = () => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
+          </div>
+          <div className="input-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="">Select your role</option>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>        
+            </select>
           </div>
           <div className="input-group">
             <label htmlFor="email">Email</label>
