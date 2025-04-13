@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard'; // Dashboard layout
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './styles/FormStyles.css';
+import CourseList from './components/CourseList';
 
 function App() {
   return (
@@ -31,7 +32,10 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           
           {/* Dashboard route */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/*" element={<Dashboard />} />
+          
+          {/* CourseList route */}
+          <Route path="/courses" element={<CourseList />} /> {/* Add this route */}
         </Routes>
       </div>
     </Router>

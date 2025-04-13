@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   return (
-    <div className="sidebar">
+    <nav className="sidebar">
       <h2>LMS Dashboard</h2>
       <ul>
         <li>
@@ -19,7 +19,7 @@ const Sidebar = () => {
           <Link to="/settings">Settings</Link>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 };
 

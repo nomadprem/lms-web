@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const handleLogout = () => {
@@ -9,10 +10,13 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="user-info">
-        <h3>Welcome, User</h3>
-        <button onClick={handleLogout}>Logout</button>
-      </div>
+      <nav>
+        <ul>
+          {/* <li><Link to="/dashboard">Home</Link></li>
+          <li><Link to="/courses">Courses</Link></li> {/* Link to CourseList */}
+          {/* <li><Link to="/progress">Progress</Link></li> */} 
+        </ul>
+      </nav>
     </header>
   );
 };

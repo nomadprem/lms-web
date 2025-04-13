@@ -29,22 +29,23 @@ export const signup = async (firstName, lastName, email, password, role) => {
   }
 };
 
-// Fetch list of courses
+// Fetch list of courses using axios
 export const getCourses = async () => {
-    try {
-      const response = await api.get('/api/courses');
-      return response.data;  // Return courses data
-    } catch (error) {
-      throw new Error('Error fetching courses');
-    }
-  };
+  try {
+    const response = await api.get('/api/courses/1');  // Use the api instance
+    return response.data;  // Return the courses data
+  } catch (error) {
+    console.error('Error fetching courses:', error); // Log the error for debugging
+    throw new Error(error.response?.data?.message || 'Failed to fetch courses');
+  }
+};
   
-  // Fetch user progress (example API)
-  export const getProgress = async () => {
-    try {
-      const response = await api.get('/api/progress');
-      return response.data;  // Return progress data
-    } catch (error) {
-      throw new Error('Error fetching progress');
-    }
+// Fetch user progress (example API)
+export const getProgress = async () => {
+  try {
+    const response = await api.get('/api/progress');
+    return response.data;  // Return progress data
+  } catch (error) {
+    throw new Error('Error fetching progress');
+  }
 };

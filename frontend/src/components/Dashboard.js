@@ -2,8 +2,8 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { Route, Routes } from 'react-router-dom';
-import CourseList from './CourseList';  // Displays list of courses
-import ProgressTracker from './ProgressTracker';  // Tracks course progress
+import CourseList from './CourseList'; // Displays list of courses
+import ProgressTracker from './ProgressTracker'; // Tracks course progress
 import '../styles/DashboardStyles.css'; // Import the styles
 
 const Dashboard = () => {
@@ -12,30 +12,36 @@ const Dashboard = () => {
       <Sidebar />
       <div className="main-content">
         <Header />
-        <div className="dashboard-header">
-          <h1>Welcome to Your Dashboard</h1>
-          <p>Manage your account and view your progress here.</p>
-        </div>
-        <div className="dashboard-content">
+        <header className="dashboard-header">
+          <div className="welcome-message">
+              <h1>Welcome back, User!</h1>
+              <p>Manage your account, track your progress, and explore your courses.</p>
+            </div>
+            <button className="logout-button">Logout</button>
+          </header>
+
+        <section className="dashboard-content">
           <div className="card">
             <h3>Profile</h3>
-            <p>Update your personal information and settings.</p>
+            <p>Keep your personal information up-to-date and customize your settings.</p>
           </div>
           <div className="card">
             <h3>Courses</h3>
-            <p>View and manage your enrolled courses.</p>
+            <p>Browse and manage the courses you are enrolled in.</p>
           </div>
           <div className="card">
             <h3>Reports</h3>
-            <p>Track your progress and performance.</p>
+            <p>Analyze your progress and performance with detailed reports.</p>
           </div>
-        </div>
-        <Routes>
-          <Route path="/dashboard" element={<h2>Welcome to your Dashboard!</h2>} />
-          <Route path="/dashboard" element={<p>Here you can view your courses, progress, and more!</p>} />
-          <Route path="/courses" element={<CourseList />} />
-          <Route path="/progress" element={<ProgressTracker />} />
-        </Routes>
+        </section>
+        <main>
+          <Routes>
+            <Route path="/dashboard/*" element={<Dashboard />} /> {/* Add the trailing * */}
+            <Route path="/dashboard" element={<h2>Welcome to your Dashboard!</h2>} />
+            <Route path="/courses" element={<CourseList />} />
+            <Route path="/progress" element={<ProgressTracker />} />
+          </Routes>
+        </main>
       </div>
     </div>
   );
