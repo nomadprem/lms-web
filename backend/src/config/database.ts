@@ -2,6 +2,8 @@ import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
 dotenv.config();
+console.log("Environment>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ", process.env.NODE_ENV)
+console.log("Database URL: ", process.env.DATABASE_PASSWORD)
 
 const sequelize = new Sequelize(
   process.env.DB_NAME!,
@@ -32,7 +34,7 @@ const sequelize = new Sequelize(
 export const initializeDatabase = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true }); // Use { force: true } only in development to drop and recreate tables
+    // await sequelize.sync(); // Use { force: true } only in development to drop and recreate tables
     console.log('Database connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);

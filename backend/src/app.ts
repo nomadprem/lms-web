@@ -8,6 +8,8 @@ import { createCourseRoutes } from './routes/course.routes';
 import { createAssignmentRoutes } from './routes/assignment.routes';
 
 dotenv.config();
+console.log(`Environment>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${process.env.NODE_ENV}`);
+console.log(`Database URL: ${process.env.DATABASE_PASSWORD}`);
 
 const app = express();
 
