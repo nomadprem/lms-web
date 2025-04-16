@@ -2,13 +2,13 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
+  async up(queryInterface, Sequelize) {
+    const indexes = await queryInterface.showIndex('users');
+    for (const index of indexes) {
+      if (index.name !== 'PRIMARY') { // Keep primary key
+        await queryInterface.removeIndex('users', index.name);
+      }
+    }
   },
 
   async down (queryInterface, Sequelize) {
