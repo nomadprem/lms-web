@@ -6,18 +6,14 @@ import { initializeDatabase } from './config/database';
 import { createUserRoutes } from './routes/user.routes';
 import { createCourseRoutes } from './routes/course.routes';
 import { createAssignmentRoutes } from './routes/assignment.routes';
+import testDbRoute from './routes/testDbRoute'; // Import the test-db route
 
 dotenv.config();
-console.log(`Environment>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${process.env.NODE_ENV}`);
-console.log(`Database URL: ${process.env.DATABASE_PASSWORD}`);
 
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
-  credentials: true,
-}));
+app.use(cors());
 app.use(bodyParser.json());
 
 // Initialize DB
@@ -27,6 +23,13 @@ initializeDatabase();
 app.use('/api/users', createUserRoutes());
 app.use('/api/courses', createCourseRoutes());
 app.use('/api/assignments', createAssignmentRoutes());
+app.use('/api/test-db', testDbRoute); // Add the test-db route
+
+//testinggggg
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
 
 // Health check
 app.get('/health', (req, res) => {
@@ -40,7 +43,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const PORT = parseInt(process.env.PORT || '5000', 10);
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
