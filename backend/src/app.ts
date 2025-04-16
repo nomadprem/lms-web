@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { initializeDatabase } from './config/database';
 import { createUserRoutes } from './routes/user.routes';
 import { createCourseRoutes } from './routes/course.routes';
-// import { createAssignmentRoutes } from './routes/assignment.routes';
+import { createAssignmentRoutes } from './routes/assignment.routes';
 // import testDbRoute from './routes/testDbRoute'; // Import the test-db route
 
 dotenv.config();
@@ -22,7 +22,7 @@ initializeDatabase();
 // Routes
 app.use('/api/users', createUserRoutes());
 app.use('/api/courses', createCourseRoutes());
-// app.use('/api/assignments', createAssignmentRoutes());
+app.use('/api/assignments', createAssignmentRoutes());
 // app.use('/api/test-db', testDbRoute); // Add the test-db route
 
 //testinggggg

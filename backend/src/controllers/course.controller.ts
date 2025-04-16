@@ -1,155 +1,77 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/user.service';
+import { CourseService } from '../services/course.service';
 import { UserRole } from '../models/user.model';
-import User, { UserAttributes } from '../models/user.model';
-import bcrypt from 'bcryptjs';
 
-// Helper type to exclude password from UserAttributes
-type UserResponse = Omit<UserAttributes, 'password'>;
+export class CourseController {
+  private courseService = new CourseService();
 
-export class UserController {
-  private userService = new UserService();
-
-  private toUserResponse(user: User): UserResponse {
-    const { password, ...userData } = user.get({ plain: true });
-    return userData;
-  }
-
-  async register(req: Request, res: Response): Promise<void> {
+  async createCourse(req: Request, res: Response) {
     try {
-      const { email, password, role, firstName, lastName } = req.body.firstName;
-      console.log('Register attempt:', { email, password, role, firstName, lastName });
-      // if (role !== "student" || role !== "professor" || role !=="admin") {
-      //   res.status(400).json({ error: 'Invalid role' });
-      //   return;
-      // }
-      console.log('Register attempt 2:', { email, password, role, firstName, lastName });
-      const existingUser = await this.userService.findUserByEmail(email);
-      if (existingUser) {
-        res.status(400).json({ error: 'Email already in use' });
-        return;
+      const { name, code, description } = req.body;
+      const course = await this.courseService.createCourse(name, code, description);
+      res.status(201).json(course);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'An unknown error occurred' });
       }
- 
-      const user = await this.userService.createUser(email, password, role, firstName, lastName);
-      console.log('User created:', user);
-      const token = this.userService.generateToken(user);
-      console.log('Token generated:', token);
-      res.status(201).json({
-        user: this.toUserResponse(user),
-        token: token
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Registration failed' });
-    }
-  }
- 
-  async login(req: Request, res: Response): Promise<void> {
-    try {
-      const { email, password } = req.body;
-      console.log('Login attempt:', { email, password });
-      const user = await this.userService.findUserByEmail(email);
-      console.log('User found:', user);
-      if (!user) {
-        res.status(401).json({ error: 'Invalid credentials' });
-        return;
-      }
-      console.log('Comparing passwords:', { inputPassword: password, storedPassword: user.password });
-      const isPasswordValid = await this.userService.comparePasswords(password, user.password);
-      if (!isPasswordValid) {
-        res.status(401).json({ error: 'Invalid credentials' });
-        return;
-      }
-      console.log('Password match successful');
-      const token = this.userService.generateToken(user);
-      res.json({
-        user: this.toUserResponse(user),
-        token
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Login failed' });
-    }
-  }
- 
-
-  async getAllUsers(req: Request, res: Response): Promise<void> {
-    try {
-      const users = await this.userService.getAllUsers();
-      console.log(users);
-      res.json(users.map(user => this.toUserResponse(user)));
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to fetch users' });
     }
   }
 
-  async getUserProfile(req: Request, res: Response): Promise<void> {
+  async assignProfessor(req: Request, res: Response) {
     try {
-      const user = await this.userService.findUserById(req.user!.id);
-      if (!user) {
-        res.status(404).json({ error: 'User not found' });
-        return;
+      const { courseId, professorId } = req.params;
+      const course = await this.courseService.assignProfessor(parseInt(courseId), parseInt(professorId));
+      res.json(course);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(400).json({ error: 'An unknown error occurred' });
       }
-      res.json(this.toUserResponse(user));
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to fetch user profile' });
     }
   }
 
-  async updateUser(req: Request, res: Response): Promise<void> {
+  async enrollStudent(req: Request, res: Response) {
+    try {
+      const { courseId, studentId } = req.params;
+      await this.courseService.enrollStudent(parseInt(courseId), parseInt(studentId));
+      res.json({ message: 'Student enrolled successfully' });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(400).json({ error: 'An unknown error occurred' });
+      }
+    }
+  }
+
+  async getCourseDetails(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const updates = req.body;
-      const userId = parseInt(id);
-
-      // Only allow admins or the user themselves to update
-      if (req.user!.role !== UserRole.ADMIN && req.user!.id !== userId) {
-        res.status(403).json({ error: 'Unauthorized' });
-        return;
+      const course = await this.courseService.getCourseDetails(parseInt(id));
+      if (!course) return res.status(404).json({ error: 'Course not found' });
+      res.json(course);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'An unknown error occurred' });
       }
-
-      // Prevent role change unless by admin
-      if (updates.role && req.user!.role !== UserRole.ADMIN) {
-        res.status(403).json({ error: 'Only admins can change roles' });
-        return;
-      }
-
-      const updatedUser = await this.userService.updateUser(userId, updates);
-      if (!updatedUser) {
-        res.status(404).json({ error: 'User not found' });
-        return;
-      }
-
-      res.json(this.toUserResponse(updatedUser));
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to update user' });
     }
   }
 
-  async deleteUser(req: Request, res: Response): Promise<void> {
+  async getAllCourses(req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const userId = parseInt(id);
-
-      // Only allow admins or the user themselves to delete
-      if (req.user!.role !== UserRole.ADMIN && req.user!.id !== userId) {
-        res.status(403).json({ error: 'Unauthorized' });
-        return;
+      const courses = await this.courseService.getAllCourses();
+      res.json(courses);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'An unknown error occurred' });
       }
-
-      const success = await this.userService.deleteUser(userId);
-      if (!success) {
-        res.status(404).json({ error: 'User not found' });
-        return;
-      }
-
-      res.json({ message: 'User deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to delete user' });
     }
   }
 }

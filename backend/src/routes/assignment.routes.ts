@@ -1,68 +1,43 @@
 import { Router } from 'express';
-import { CourseController } from '../controllers/course.controller';
+import { AssignmentController } from '../controllers/assignment.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 import { UserRole } from '../models/user.model';
 
-export const createCourseRoutes = (): Router => {
+export const createAssignmentRoutes = (): Router => {
   const router = Router();
-  const courseController = new CourseController();
+  const assignmentController = new AssignmentController();
 
-  // Admin-only routes
+  // Professor-only routes
   router.post('/', 
-    authenticate([UserRole.ADMIN]), 
-    async (req, res, next) => {
-      try {
-        await courseController.createCourse(req, res);
-      } catch (error) {
-        next(error);
-      }
-    }
+    authenticate([UserRole.PROFESSOR]),
+    (req, res, next) => assignmentController.createAssignment(req, res).catch(next)
   );
 
-  router.put('/:courseId/professor/:professorId', 
-    authenticate([UserRole.ADMIN]), 
-    async (req, res, next) => {
-      try {
-        await courseController.assignProfessor(req, res);
-      } catch (error) {
-        next(error);
-      }
-    }
+  router.get('/:assignmentId/submissions',
+    authenticate([UserRole.PROFESSOR]),
+    (req, res, next) => assignmentController.getAssignmentSubmissions(req, res).catch(next)
   );
 
-  // Professor or Admin can enroll students
-  router.post('/:courseId/students/:studentId', 
-    authenticate([UserRole.ADMIN, UserRole.PROFESSOR]), 
-    async (req, res, next) => {
-      try {
-        await courseController.enrollStudent(req, res);
-      } catch (error) {
-        next(error);
-      }
-    }
+  router.put('/submissions/:submissionId/grade',
+    authenticate([UserRole.PROFESSOR]),
+    (req, res, next) => assignmentController.gradeSubmission(req, res).catch(next)
   );
 
-  // Public routes (but authenticated)
-  router.get('/', 
-    authenticate(), 
-    async (req, res, next) => {
-      try {
-        await courseController.getAllCourses(req, res);
-      } catch (error) {
-        next(error);
-      }
-    }
+  // Student routes
+  router.post('/:assignmentId/submit',
+    authenticate([UserRole.STUDENT]),
+    (req, res, next) => assignmentController.submitAssignment(req, res).catch(next)
   );
 
-  router.get('/:id', 
-    authenticate(), 
-    async (req, res, next) => {
-      try {
-        await courseController.getCourseDetails(req, res);
-      } catch (error) {
-        next(error);
-      }
-    }
+  router.get('/my-submissions',
+    authenticate([UserRole.STUDENT]),
+    (req, res, next) => assignmentController.getStudentSubmissions(req, res).catch(next)
+  );
+
+  // Shared routes
+  router.get('/courses/:courseId',
+    authenticate([UserRole.STUDENT, UserRole.PROFESSOR]),
+    (req, res, next) => assignmentController.getCourseAssignments(req, res).catch(next)
   );
 
   return router;
